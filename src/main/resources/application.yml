@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /app
+spring:
+  datasource:
+    username: wpay
+    password: wpay-2022
+    url: jdbc:postgresql://localhost:5432/ufpso
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          charset_name: UTF-8
+          import_files: sql/user.sql,sql/role.sql,sql/module.sql,sql/permission.sql
+        default_schema: main
+settings:
+  auth:
+    token-time: 30
