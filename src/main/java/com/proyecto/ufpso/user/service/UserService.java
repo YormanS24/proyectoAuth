@@ -1,8 +1,7 @@
 package com.proyecto.ufpso.user.service;
 
-import com.proyecto.ufpso.user.dto.LoginRequest;
-import com.proyecto.ufpso.user.dto.LoginResponse;
+import com.proyecto.ufpso.authentication.controller.AuthenticationController;
+import com.proyecto.ufpso.authentication.dto.LoginResponse;
 
 public interface UserService {
-    LoginResponse login(LoginRequest request);
 }

@@ -1,4 +1,4 @@
-package com.proyecto.ufpso.user.dto;
+package com.proyecto.ufpso.authentication.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
