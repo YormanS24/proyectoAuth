@@ -1,6 +1,6 @@
 package com.proyecto.ufpso.security.jwt;
-
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -47,11 +48,19 @@ public class JwtTokenProvider {
 
     //validar el jwt recibido en la petición
     public String extractorUserName(String jwt){
-        return this.extractAllClaims(jwt).getSubject();
+        if (this.extractAllClaims(jwt) == null){
+//            throw new ResourceNoFountException("Error en el ");
+        }
+        return Objects.requireNonNull(this.extractAllClaims(jwt)).getSubject();
     }
 
     private Claims extractAllClaims(String jwt){
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
+//        return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
+        try {
+            return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
+        }catch (JwtException ex){
+            return null;
+        }
     }
 
     private static SecretKey generarClaveSecreta() {

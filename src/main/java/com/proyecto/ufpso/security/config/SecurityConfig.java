@@ -1,7 +1,6 @@
 package com.proyecto.ufpso.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException;
 import com.proyecto.ufpso.security.jwt.JwtRequestFilter;
 import com.proyecto.ufpso.security.service.PermissionRoleEvaluatorImpl;
 import com.proyecto.ufpso.security.service.UserDetailsServiceImpl;
@@ -26,9 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableMethodSecurity
