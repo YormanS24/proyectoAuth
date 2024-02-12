@@ -1,6 +1,5 @@
 package com.proyecto.ufpso.security.jwt;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +10,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -22,10 +20,10 @@ public class JwtTokenProvider {
 
     SecretKey key = generarClaveSecreta();
 
-    public String generateToken(String userName){
+    public String generateToken(String userName) {
 
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("name",userName);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", userName);
 
         //hora actual en milisegundos
         Date issuedAt = new Date(System.currentTimeMillis());
@@ -47,27 +45,20 @@ public class JwtTokenProvider {
     }
 
     //validar el jwt recibido en la petición
-    public String extractorUserName(String jwt){
-        if (this.extractAllClaims(jwt) == null){
-            throw new IllegalArgumentException("JWT no es valido");
-        }
-        return Objects.requireNonNull(this.extractAllClaims(jwt)).getSubject();
+    public String extractorUserName(String jwt) {
+        return this.extractAllClaims(jwt).getSubject();
     }
 
-    private Claims extractAllClaims(String jwt){
-        try {
-            return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
-        }catch (JwtException ex){
-            return null;
-        }
+    private Claims extractAllClaims(String jwt) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
     }
 
     private static SecretKey generarClaveSecreta() {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
             return keyGenerator.generateKey();
-        }catch (Exception ex){
-            log.error("Error al generar la llave secreta del JWT [{}]",ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error al generar la llave secreta del JWT [{}]", ex.getMessage());
             return null;
         }
     }
