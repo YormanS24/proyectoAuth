@@ -25,11 +25,6 @@ public class ExceptionController {
         return new ResponseEntity<>(ErrorExceptionResponse.create(re.getMessage(),re.getStatus()),HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorExceptionResponse> accessDeniedException(AccessDeniedException ac){
-        return new ResponseEntity<>(ErrorExceptionResponse.create(ac.getMessage(),ac.getStatus()),HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<ErrorExceptionResponse> authException(AuthenticationFailedException au){
         return new ResponseEntity<>(ErrorExceptionResponse.create(au.getMessage(),au.getStatus()),HttpStatus.UNAUTHORIZED);

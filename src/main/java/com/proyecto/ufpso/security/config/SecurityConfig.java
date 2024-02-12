@@ -1,5 +1,7 @@
 package com.proyecto.ufpso.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException;
 import com.proyecto.ufpso.security.jwt.JwtRequestFilter;
 import com.proyecto.ufpso.security.service.PermissionRoleEvaluatorImpl;
 import com.proyecto.ufpso.security.service.UserDetailsServiceImpl;
@@ -23,6 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+
+import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableMethodSecurity
@@ -58,7 +64,26 @@ public class SecurityConfig {
                     registry.requestMatchers(HttpMethod.GET,ROUTES_GET_ALLOWED_WITHOUT_AUTHENTICATION).permitAll();
                     registry.requestMatchers(HttpMethod.POST,ROUTES_POST_ALLOWED_WITHOUT_AUTHENTICATION).permitAll();
                     registry.anyRequest().authenticated();
+                }).exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
+                    httpSecurityExceptionHandlingConfigurer.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        HashMap<String,String> map = new HashMap<>();
+                        map.put("message","No tienes las credenciales adecuadas para acceder a este recurso.");
+                        ObjectMapper mapper = new ObjectMapper();
+                        response.setStatus(403);
+                        response.setHeader("Content-Type", "application/json");
+                        response.addHeader("message","");
+                        mapper.writeValueAsString(map);
+                        response.getWriter().write(mapper.writeValueAsString(map));
+                    }).authenticationEntryPoint((request, response, authException) -> {
+                        HashMap<String,String> map = new HashMap<>();
+                        map.put("message","Credenciales inválidas. Inicia sesión con un usuario autorizado");
+                        ObjectMapper mapper = new ObjectMapper();
+                        response.setStatus(401);
+                        response.setHeader("Content-Type", "application/json");
+                        response.getWriter().write(mapper.writeValueAsString(map));
+                    });
                 });
+
         return httpSecurity.build();
     }
 
