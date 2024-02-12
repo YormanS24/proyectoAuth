@@ -49,13 +49,12 @@ public class JwtTokenProvider {
     //validar el jwt recibido en la petición
     public String extractorUserName(String jwt){
         if (this.extractAllClaims(jwt) == null){
-//            throw new ResourceNoFountException("Error en el ");
+            throw new IllegalArgumentException("JWT no es valido");
         }
         return Objects.requireNonNull(this.extractAllClaims(jwt)).getSubject();
     }
 
     private Claims extractAllClaims(String jwt){
-//        return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
         try {
             return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
         }catch (JwtException ex){

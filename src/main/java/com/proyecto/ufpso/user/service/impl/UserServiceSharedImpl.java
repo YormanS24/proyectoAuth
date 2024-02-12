@@ -4,6 +4,7 @@ import com.proyecto.ufpso.permission.dto.PermissionResponse;
 import com.proyecto.ufpso.user.entity.User;
 import com.proyecto.ufpso.user.repository.UserRepository;
 import com.proyecto.ufpso.user.service.UserServiceShared;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class UserServiceSharedImpl implements UserServiceShared {
     }
 
     @Override
-    public Optional<User> getUserByUserName(String userName) {
-        return userRepository.findByUserName(userName);
+    public User getUserByUserName(String userName) {
+        return userRepository.findByUserName(userName).orElseThrow(()-> new UsernameNotFoundException("El usuario solicitado no se encuentra registrado."));
     }
 
     @Override

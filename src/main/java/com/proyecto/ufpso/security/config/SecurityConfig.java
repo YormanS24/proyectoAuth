@@ -41,7 +41,7 @@ public class SecurityConfig {
     }
 
     private final String[] ROUTES_ALLOWED_WITHOUT_AUTHENTICATION = {
-            "security/authentication/login"
+            "security/authentication/login",
     };
 
     private final String[] ROUTES_GET_ALLOWED_WITHOUT_AUTHENTICATION = {};
