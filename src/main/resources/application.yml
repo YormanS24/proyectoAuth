@@ -28,8 +28,8 @@ springdoc:
 settings:
   auth:
     token-time: 30
-logging:
-  level:
-    org:
-      springframework:
-        web: DEBUG
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: DEBUG
