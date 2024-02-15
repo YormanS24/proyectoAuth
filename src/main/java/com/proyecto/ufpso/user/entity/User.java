@@ -60,4 +60,15 @@ public class User {
     )
     Set<Role> roles;
 
+    public void updateLoginAttempts(int attempts){
+        this.loginAttempts = attempts;
+    }
+
+    public void updateLocked(boolean locked){
+        this.locked = locked;
+    }
+
+    public void addCodeVerification(String codeVerification){
+        this.codeVerification = codeVerification;
+    }
 }

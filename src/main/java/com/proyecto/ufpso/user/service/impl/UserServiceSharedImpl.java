@@ -1,5 +1,6 @@
 package com.proyecto.ufpso.user.service.impl;
 
+import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException;
 import com.proyecto.ufpso.permission.dto.PermissionResponse;
 import com.proyecto.ufpso.user.entity.User;
 import com.proyecto.ufpso.user.repository.UserRepository;
@@ -21,11 +22,16 @@ public class UserServiceSharedImpl implements UserServiceShared {
 
     @Override
     public User getUserByUserName(String userName) {
-        return userRepository.findByUserName(userName).orElseThrow(()-> new UsernameNotFoundException("El usuario solicitado no se encuentra registrado."));
+        return userRepository.findByUserName(userName).orElseThrow(()-> new AuthenticationFailedException("credenciales incorrectas"));
     }
 
     @Override
     public List<PermissionResponse> getAllPermission(String userName) {
         return userRepository.getPermissionByUserName(userName);
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 }

@@ -9,4 +9,6 @@ public interface UserServiceShared {
     User getUserByUserName(String userName);
 
     List<PermissionResponse> getAllPermission(String userName);
+
+    void saveUser(User user);
 }
