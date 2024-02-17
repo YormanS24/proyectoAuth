@@ -1,5 +1,6 @@
 package com.proyecto.ufpso.permission.entity;
 
+import com.proyecto.ufpso.common.util.AuditEntity;
 import com.proyecto.ufpso.module.entity.Module;
 import com.proyecto.ufpso.role.entity.Role;
 import jakarta.persistence.*;
@@ -7,19 +8,19 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import org.hibernate.annotations.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "permission")
-public class Permission {
+@Table(name = "permission",schema = "main")
+@EntityListeners(AuditingEntityListener.class)
+public class Permission extends AuditEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID2")
+    @GeneratedValue
     @Column(name = "permission_id")
     private UUID permissionId;
 
@@ -31,14 +32,6 @@ public class Permission {
 
     @Transient
     private boolean checked;
-
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "permissions",cascade = CascadeType.REFRESH)
     @Fetch(FetchMode.SUBSELECT)
