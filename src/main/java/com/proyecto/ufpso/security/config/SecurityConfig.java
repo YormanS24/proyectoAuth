@@ -41,10 +41,11 @@ public class SecurityConfig {
     }
 
     private final String[] ROUTES_ALLOWED_WITHOUT_AUTHENTICATION = {
-            "security/authentication/login",
+            "security/authentication/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
+            "/security/document_type/",
     };
 
     private final String[] ROUTES_GET_ALLOWED_WITHOUT_AUTHENTICATION = {};
