@@ -1,5 +1,6 @@
 package com.proyecto.ufpso.common.exception.controller;
 
+import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException;
 import com.proyecto.ufpso.common.exception.service.ResourceNotFoundException;
 import com.proyecto.ufpso.common.exception.service.ServerErrorException;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,17 @@ public class ExceptionHandlerController {
         map.put("error", "Bad Request");
         map.put("message", ex.getMessage());
         log.warn("IllegalArgumentException [{}]",ex.getMessage());
+        return map;
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String,String> AuthenticationException(AuthenticationFailedException ex){
+        Map<String,String> map = new HashMap<>();
+        map.put("error", "Unauthorized");
+        map.put("message", ex.getMessage());
+        log.warn("AuthenticationFailedException [{}]",ex.getMessage());
         return map;
     }
 }

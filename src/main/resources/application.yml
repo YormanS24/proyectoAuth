@@ -2,7 +2,24 @@ server:
   port: 8080
   servlet:
     context-path: /app
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: DEBUG
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: wpossecommerce@gmail.com
+    password: tytilastpyeynsoo
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
   datasource:
     username: default
     password: 9OgAdoIv1heQ
@@ -18,8 +35,7 @@ spring:
         format_sql: true
         hbm2ddl:
           charset_name: UTF-8
-          import_files: sql/user.sql,sql/role.sql,sql/module.sql,sql/permission.sql
-        default_schema: main
+          import_files: sql/documentType.sql,sql/user.sql,sql/role.sql,sql/module.sql,sql/permission.sql
 springdoc:
   swagger-ui:
     enabled: true
@@ -28,8 +44,10 @@ springdoc:
 settings:
   auth:
     token-time: 30
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        web: DEBUG
+    time-resent-email: 30
+  encryption:
+    aes:
+      key: p1u8BUk3s2LMpiipOt0H2&kI8691oWG5
+      iv: 7i3N42ATc
+  application:
+    name: CinelLeonelda

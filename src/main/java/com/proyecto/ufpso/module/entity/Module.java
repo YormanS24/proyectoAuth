@@ -1,24 +1,22 @@
 package com.proyecto.ufpso.module.entity;
 
+import com.proyecto.ufpso.common.util.AuditEntity;
 import com.proyecto.ufpso.permission.entity.Permission;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "module")
-public class Module {
+@Table(name = "module",schema = "main")
+@EntityListeners(AuditingEntityListener.class)
+public class Module extends AuditEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID1")
+    @GeneratedValue
     @Column(name = "module_id")
     private UUID moduleId;
 
@@ -31,16 +29,11 @@ public class Module {
     @Column(name = "description",nullable = false,length = 200)
     private String description;
 
+    @Column(name = "route",nullable = false)
+    private String route;
+
     @Column(name = "orden",nullable = false,unique = true)
     private int order;
-
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updateAt;
 
     @OneToMany(mappedBy = "module")
     private Set<Permission> permissions;

@@ -1,11 +1,11 @@
 package com.proyecto.ufpso.user.entity;
 
+import com.proyecto.ufpso.common.util.AuditEntity;
+import com.proyecto.ufpso.refreshToken.entity.RefreshToken;
 import com.proyecto.ufpso.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -13,12 +13,12 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "user")
-public class User {
+@Table(name = "user",schema = "main")
+@EntityListeners(AuditingEntityListener.class)
+public class User extends AuditEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID4")
+    @GeneratedValue
     @Column(name = "user_id")
     private UUID userId;
 
@@ -34,6 +34,9 @@ public class User {
     @Column(name = "login_attempts")
     private int loginAttempts;
 
+    @Column(name = "login_attempts_mfa")
+    private int loginAttemptsMfa;
+
     @Column(name = "administrator",nullable = false)
     private boolean administrator;
 
@@ -43,13 +46,20 @@ public class User {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Column(name = "created_code_verification")
+    private LocalDateTime createCodeVerification;
 
-    @Column(name = "update_at")
-    @UpdateTimestamp
-    private LocalDateTime updateAt;
+    @Column(name = "quantity_resent_email")
+    private int quantityResentEmail;
+
+    @Column(name = "reset_password_updateAt")
+    private LocalDateTime resetPasswordUpdateAt;
+
+    @OneToOne(mappedBy = "user")
+    private Person person;
+
+    @OneToOne(mappedBy = "user")
+    private RefreshToken refreshToken;
 
     @ManyToMany(cascade = CascadeType.REFRESH)
     @JoinTable(
@@ -60,4 +70,36 @@ public class User {
     )
     Set<Role> roles;
 
+    public void updateLoginAttempts(int attempts){
+        this.loginAttempts = attempts;
+    }
+
+    public void updateLocked(boolean locked){
+        this.locked = locked;
+    }
+
+    public void updateLoginAttemptsMfa(int loginAttemptsMfa){
+        this.loginAttemptsMfa = loginAttemptsMfa;
+    }
+
+    public void updateQuantityResentEmail(int quantityResentEmail){
+        this.quantityResentEmail = quantityResentEmail;
+    }
+
+    public void resetCodeVerification(){
+        this.codeVerification = null;
+    }
+
+    public void updateResetPasswordUpdateAt(LocalDateTime resetPasswordUpdateAt){
+        this.resetPasswordUpdateAt = resetPasswordUpdateAt;
+    }
+
+    public void updatePassword(String password){
+        this.password = password;
+    }
+
+    public void addCodeVerification(String codeVerification){
+        this.codeVerification = codeVerification;
+        this.createCodeVerification = LocalDateTime.now();
+    }
 }
