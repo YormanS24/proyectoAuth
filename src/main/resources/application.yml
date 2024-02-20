@@ -22,12 +22,12 @@ spring:
             required: true
   datasource:
     username: default
-    password: 9OgAdoIv1heQ
-    url: jdbc:postgresql://ep-gentle-fire-a4wvne1d.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require
+    password: 6G9sQHtySjId
+    url: jdbc:postgres://ep-blue-tree-a464os3n.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     show-sql: true
     open-in-view: false
     properties:
