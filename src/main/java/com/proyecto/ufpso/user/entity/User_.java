@@ -1,5 +1,6 @@
 package com.proyecto.ufpso.user.entity;
 
+import com.proyecto.ufpso.refreshToken.entity.RefreshToken;
 import com.proyecto.ufpso.role.entity.Role;
 import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -25,4 +26,6 @@ public abstract class User_ {
     public static volatile SingularAttribute<User,Person> person;
     public static volatile SetAttribute<User, Role> roles;
     public static volatile SingularAttribute<User,Integer> quantityResentEmail;
+    public static volatile SingularAttribute<User,LocalDateTime> resetPasswordUpdateAt;
+    public static volatile SingularAttribute<User, RefreshToken> refreshToken;
 }
