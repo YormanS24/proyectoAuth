@@ -1,9 +1,9 @@
 package com.proyecto.ufpso.authentication.controller;
 
-import com.proyecto.ufpso.authentication.dto.AuthenticationMfaRequest;
-import com.proyecto.ufpso.authentication.dto.LoginRequest;
+import com.proyecto.ufpso.authentication.dto.*;
 import com.proyecto.ufpso.authentication.service.AuthenticationService;
-import com.proyecto.ufpso.authentication.dto.LoginResponse;
+import com.proyecto.ufpso.refreshToken.dto.RefreshTokenRequest;
+import com.proyecto.ufpso.refreshToken.dto.RefreshTokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,10 +50,42 @@ public class AuthenticationController {
     @Operation(description = "Resent email the code verification of user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "OK"),
-            @ApiResponse(responseCode = "408",description = "Request Timeout")
+            @ApiResponse(responseCode = "500",description = "Server error")
     })
     public ResponseEntity<HttpStatus> resentEmailByUser(@Parameter(description = "UUID of a user",required = true) @PathVariable("id")UUID userId){
         authenticationService.resentEmailByUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot_password")
+    @Operation(description = "Forgot password by user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "OK"),
+            @ApiResponse(responseCode = "401",description = "UNAUTHORIZED")
+    })
+    public ResponseEntity<HttpStatus> forgotPassword(@Valid @RequestBody ResetPasswordRequest request){
+        authenticationService.forgotPassword(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/reset_password")
+    @Operation(description = "Reset password by user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "OK"),
+            @ApiResponse(responseCode = "401",description = "UNAUTHORIZED")
+    })
+    public ResponseEntity<HttpStatus> resetPassword(@Valid @RequestBody TokenResentPasswordRequest request){
+        authenticationService.verifyTokenResetPassword(request);
+        return  new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh_token")
+    @Operation(description = "Refresh token by user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "OK"),
+            @ApiResponse(responseCode = "401",description = "UNAUTHORIZED")
+    })
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request){
+        return  new ResponseEntity<>(authenticationService.refreshToken(request),HttpStatus.OK);
     }
 }

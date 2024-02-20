@@ -1,12 +1,17 @@
 package com.proyecto.ufpso.authentication.service.impl;
 
-import com.proyecto.ufpso.authentication.dto.AuthenticationMfaRequest;
-import com.proyecto.ufpso.authentication.dto.LoginRequest;
-import com.proyecto.ufpso.authentication.dto.LoginResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.proyecto.ufpso.authentication.dto.*;
 import com.proyecto.ufpso.authentication.service.AuthenticationService;
+import com.proyecto.ufpso.common.encryption.Encryption;
 import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException;
 import com.proyecto.ufpso.email.service.EmailSendService;
 import com.proyecto.ufpso.module.service.ModuleServiceShard;
+import com.proyecto.ufpso.refreshToken.dto.RefreshTokenRequest;
+import com.proyecto.ufpso.refreshToken.dto.RefreshTokenResponse;
+import com.proyecto.ufpso.refreshToken.entity.RefreshToken;
+import com.proyecto.ufpso.refreshToken.service.RefreshTokenShared;
 import com.proyecto.ufpso.security.jwt.JwtTokenProvider;
 import com.proyecto.ufpso.user.entity.User;
 import com.proyecto.ufpso.user.service.UserServiceShared;
@@ -33,16 +38,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSendService emailSendService;
     private final ModuleServiceShard moduleServiceShard;
+    private final Encryption encryption;
+    private final RefreshTokenShared refreshTokenShared;
     @Value("${settings.auth.time-resent-email}")
     private int timeResentEmail;
 
-    public AuthenticationServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserServiceShared userServiceShared, PasswordEncoder passwordEncoder, EmailSendService emailSendService, ModuleServiceShard moduleServiceShard) {
+    public AuthenticationServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserServiceShared userServiceShared, PasswordEncoder passwordEncoder, EmailSendService emailSendService, ModuleServiceShard moduleServiceShard, Encryption encryption, RefreshTokenShared refreshTokenShared) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userServiceShared = userServiceShared;
         this.passwordEncoder = passwordEncoder;
         this.emailSendService = emailSendService;
         this.moduleServiceShard = moduleServiceShard;
+        this.encryption = encryption;
+        this.refreshTokenShared = refreshTokenShared;
     }
 
 
@@ -90,11 +99,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AuthenticationFailedException("el código ha expirado, vuelve a iniciar sesión");
         }
 
+        if (user.getRefreshToken() != null){
+            refreshTokenShared.deleteRefreshTokenByUser(user);
+        }
         user.updateLoginAttemptsMfa(0);
         user.resetCodeVerification();
         user.updateQuantityResentEmail(0);
         userServiceShared.saveUser(user);
-        return new LoginResponse(jwtTokenProvider.generateToken(user.getUserName()), UUID.randomUUID(),userServiceShared.getInfoBasicUser(request.getUserId()),moduleServiceShard.getModuleOfUser(request.getUserId()),userServiceShared.getAllPermission(user.getUserName()));
+        return new LoginResponse(jwtTokenProvider.generateToken(user.getUserName()), refreshTokenShared.createRefreshToken(user),userServiceShared.getInfoBasicUser(request.getUserId()),moduleServiceShard.getModuleOfUser(request.getUserId()),userServiceShared.getAllPermission(user.getUserName()));
     }
 
     @Override
@@ -103,6 +115,61 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.addCodeVerification(this.generateCodeVerification(user));
         user.updateQuantityResentEmail(user.getQuantityResentEmail()+1);
         userServiceShared.saveUser(user);
+    }
+
+    @Override
+    public void forgotPassword(ResetPasswordRequest request) {
+        User user = userServiceShared.getUserNameAndEmail(request.getUserName(), request.getEmail());
+        if (user == null){
+            throw new AuthenticationFailedException("usuario no encontrado");
+        }
+        user.updateResetPasswordUpdateAt(null);
+        userServiceShared.saveUser(user);
+
+        String json = "{'user_id':'" + user.getUserId() + "','user_name':'" + user.getUserName() + "', 'timestamp':'" + LocalDateTime.now().plusDays(1) + "'}";
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        String token = encryption.encrypt(jsonObject.toString(), null);
+        String urlToken = "localhost" + "request.getUrlPath()" + "/reset_password/" + token;
+        emailSendService.resetPasswordUser(user,urlToken);
+    }
+
+    @Override
+    public void verifyTokenResetPassword(TokenResentPasswordRequest request) {
+        if (!request.getPassword().equals(request.getPasswordConfirmed())){
+            throw new AuthenticationFailedException("tu contraseña no coincide.");
+        }
+
+        JsonObject token = new Gson().fromJson(encryption.decrypt(request.getToken(),null), JsonObject.class);
+
+        UUID userId = UUID.fromString(token.get("user_id").getAsString());
+        String userName = token.get("user_name").getAsString();
+        LocalDateTime expirationDate = LocalDateTime.parse(token.get("timestamp").getAsString());
+
+        User user = userServiceShared.getUserOfResetPassword(userId,userName);
+
+        if (user.getResetPasswordUpdateAt() != null){
+            throw new AuthenticationFailedException("el token ya fue utilizado");
+        }
+
+        if (LocalDateTime.now().isAfter(expirationDate)) {
+            throw new AuthenticationFailedException("El token ya ha expirado");
+        }
+
+        user.updatePassword(passwordEncoder.encode(request.getPassword()));
+        user.updateResetPasswordUpdateAt(LocalDateTime.now());
+        user.updateLoginAttempts(0);
+        user.updateLoginAttemptsMfa(0);
+        user.updateQuantityResentEmail(0);
+        user.updateLocked(false);
+        userServiceShared.saveUser(user);
+    }
+
+    @Override
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+        RefreshToken refreshToken = refreshTokenShared.evaluateRefreshToken(request.getRefreshToken());
+        User user = refreshToken.getUser();
+        refreshTokenShared.deleteRefreshTokenByUser(user);
+        return RefreshTokenResponse.create(refreshTokenShared.createRefreshToken(user), jwtTokenProvider.generateToken(user.getUserName()));
     }
 
     private void updateLockedUser(User user){
@@ -126,14 +193,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private String generateCodeVerification(User user){
-        Duration duration = Duration.between(user.getCreateCodeVerification(),LocalDateTime.now());
-        if (user.getQuantityResentEmail()>=3 && duration.toMinutes() <= timeResentEmail){
-            throw new AuthenticationFailedException("has alcanzado el límite de intentos para reenviar el código a tu correo, reintenta en "+(timeResentEmail-duration.toMinutes())+" minutos.");
+        if (user.getCreateCodeVerification()!= null){
+            Duration duration = Duration.between(user.getCreateCodeVerification(),LocalDateTime.now());
+            if (user.getQuantityResentEmail()>=3 && duration.toMinutes() <= timeResentEmail){
+                throw new AuthenticationFailedException("has alcanzado el límite de intentos para reenviar el código a tu correo, reintenta en "+(timeResentEmail-duration.toMinutes())+" minutos.");
+            }
         }
         SecureRandom random = new SecureRandom();
         int code = random.nextInt(999999);
         String codeVerification = String.format("%06d",code);
-        emailSendService.emailCodeVerification(codeVerification);
+//        emailSendService.emailCodeVerification(codeVerification);
         return codeVerification;
     }
 }
