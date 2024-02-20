@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,7 +81,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh_token")
-    @Operation(description = "Refresh token by user")
+    @Operation(security = @SecurityRequirement(name = "bearer-key"), description = "Refresh token by user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "OK"),
             @ApiResponse(responseCode = "401",description = "UNAUTHORIZED")
