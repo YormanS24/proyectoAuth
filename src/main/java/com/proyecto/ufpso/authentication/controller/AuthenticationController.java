@@ -81,7 +81,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh_token")
-    @Operation(security = @SecurityRequirement(name = "bearer-key"), description = "Refresh token by user")
+    @Operation(description = "Refresh token by user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "OK"),
             @ApiResponse(responseCode = "401",description = "UNAUTHORIZED")

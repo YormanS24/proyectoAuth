@@ -51,12 +51,7 @@ public class SecurityConfig {
     };
 
     private final String[] ROUTES_POST_ALLOWED_WITHOUT_AUTHENTICATION = {
-            "/security/authentication/reset_password",
-            "/security/authentication/mfa",
-            "/security/authentication/login",
-            "/security/authentication/forgot_password",
-            "/security/authentication/resent_email/{id}"
-
+            "/security/authentication/**",
     };
 
     @Bean
