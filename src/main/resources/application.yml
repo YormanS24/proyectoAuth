@@ -23,7 +23,7 @@ spring:
   datasource:
     username: default
     password: 6G9sQHtySjId
-    url: jdbc:postgres://ep-blue-tree-a464os3n.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require
+    url: jdbc:postgresql://ep-blue-tree-a464os3n.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require
   jpa:
     generate-ddl: true
     hibernate:
