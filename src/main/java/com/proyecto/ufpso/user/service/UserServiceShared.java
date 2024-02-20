@@ -17,4 +17,8 @@ public interface UserServiceShared {
     void saveUser(User user);
 
     BasicUserInformationResponse getInfoBasicUser(UUID userId);
+
+    User  getUserNameAndEmail(String userName,String email);
+
+    User getUserOfResetPassword(UUID userId,String userName);
 }

@@ -1,6 +1,7 @@
 package com.proyecto.ufpso.user.entity;
 
 import com.proyecto.ufpso.common.util.AuditEntity;
+import com.proyecto.ufpso.refreshToken.entity.RefreshToken;
 import com.proyecto.ufpso.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,8 +52,14 @@ public class User extends AuditEntity {
     @Column(name = "quantity_resent_email")
     private int quantityResentEmail;
 
+    @Column(name = "reset_password_updateAt")
+    private LocalDateTime resetPasswordUpdateAt;
+
     @OneToOne(mappedBy = "user")
     private Person person;
+
+    @OneToOne(mappedBy = "user")
+    private RefreshToken refreshToken;
 
     @ManyToMany(cascade = CascadeType.REFRESH)
     @JoinTable(
@@ -81,6 +88,14 @@ public class User extends AuditEntity {
 
     public void resetCodeVerification(){
         this.codeVerification = null;
+    }
+
+    public void updateResetPasswordUpdateAt(LocalDateTime resetPasswordUpdateAt){
+        this.resetPasswordUpdateAt = resetPasswordUpdateAt;
+    }
+
+    public void updatePassword(String password){
+        this.password = password;
     }
 
     public void addCodeVerification(String codeVerification){

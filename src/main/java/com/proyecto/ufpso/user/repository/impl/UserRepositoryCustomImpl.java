@@ -90,4 +90,30 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         manager.close();
         return result;
     }
+
+    @Override
+    public User getUserNameAndEmail(String userName, String email) {
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        User result = null;
+
+        try {
+            CriteriaQuery<User> cq = cb.createQuery(User.class);
+
+            Root<User> root = cq.from(User.class);
+            Join<User,Person> userPersonJoin = root.join(User_.person,JoinType.INNER);
+
+            cq.select(root);
+
+            cq.where(
+                    cb.and(cb.equal(root.get(User_.userName),userName),cb.equal(userPersonJoin.get(Person_.email),email))
+            );
+
+            TypedQuery<User> query = manager.createQuery(cq);
+            result = query.getSingleResult();
+        }catch (Exception ex){
+            log.error("error en la consulta criteria getUserNameAndEmail [{}]",ex.getMessage());
+        }
+        manager.close();
+        return result;
+    }
 }
