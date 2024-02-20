@@ -119,7 +119,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void forgotPassword(ResetPasswordRequest request) {
-        User user = userServiceShared.getUserNameAndEmail(request.getUserName(), request.getEmail());
+        User user = userServiceShared.getUserNameAndEmail(request.getUserName().toLowerCase(Locale.ROOT).replace(" ",""), request.getEmail());
         if (user == null){
             throw new AuthenticationFailedException("usuario no encontrado");
         }
