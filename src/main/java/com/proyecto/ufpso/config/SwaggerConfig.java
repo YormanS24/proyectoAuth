@@ -20,7 +20,7 @@ public class SwaggerConfig {
                 )
                 .info(new Info().title("API UFPSO")
                         .description("Api for proyect of UFPSO")
-                        .version("V 0.0.1")
+                        .version("V 0.1.5")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")))
                 .externalDocs(new ExternalDocumentation()
                         .description("SpringShop Wiki Documentation")

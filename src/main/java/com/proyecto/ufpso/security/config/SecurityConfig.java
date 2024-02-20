@@ -41,16 +41,18 @@ public class SecurityConfig {
     }
 
     private final String[] ROUTES_ALLOWED_WITHOUT_AUTHENTICATION = {
-            "security/authentication/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
+    };
+
+    private final String[] ROUTES_GET_ALLOWED_WITHOUT_AUTHENTICATION = {
             "/security/document_type/",
     };
 
-    private final String[] ROUTES_GET_ALLOWED_WITHOUT_AUTHENTICATION = {};
-
-    private final String[] ROUTES_POST_ALLOWED_WITHOUT_AUTHENTICATION = {};
+    private final String[] ROUTES_POST_ALLOWED_WITHOUT_AUTHENTICATION = {
+            "security/authentication/**",
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,CorsConfig corsConfig) throws Exception {
