@@ -119,7 +119,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void forgotPassword(ResetPasswordRequest request) {
-        User user = userServiceShared.getUserNameAndEmail(request.getUserName(), request.getEmail());
+        User user = userServiceShared.getUserNameAndEmail(request.getUserName().toLowerCase(Locale.ROOT).replace(" ",""), request.getEmail());
         if (user == null){
             throw new AuthenticationFailedException("usuario no encontrado");
         }
@@ -188,8 +188,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.updateLoginAttemptsMfa(user.getLoginAttemptsMfa()+1);
         }
         userServiceShared.saveUser(user);
-        String message = (attempts.equals(GenericLoginAttempts.LOGIN_ATTEMPTS))?".":"el código es inválido";
-        throw new AuthenticationFailedException("quedan "+(attempts.equals(GenericLoginAttempts.LOGIN_ATTEMPTS)?3-user.getLoginAttempts():3-user.getLoginAttemptsMfa())+" intentos "+message);
+        String message = (attempts.equals(GenericLoginAttempts.LOGIN_ATTEMPTS))?".":" el código es inválido";
+        throw new AuthenticationFailedException("quedan "+(attempts.equals(GenericLoginAttempts.LOGIN_ATTEMPTS)?3-user.getLoginAttempts():3-user.getLoginAttemptsMfa())+" intentos"+message);
     }
 
     private String generateCodeVerification(User user){
