@@ -18,9 +18,9 @@ public class EmailSendServiceImpl implements EmailSendService {
     }
 
     @Override
-    public void emailCodeVerification(String codeVerification) {
+    public void emailCodeVerification(String codeVerification,String email) {
         emailService.sendEmail(EmailRequest.create(
-                "sanchezyorman0@gmail.com",
+                email,
                 "Codigo de Verificacion",
                 "Su coigo de Verificacion del CINE LEONELDA: "+codeVerification,
                 null,
