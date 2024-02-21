@@ -77,7 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.updateQuantityResentEmail(0);
         userServiceShared.saveUser(user);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUserName().toLowerCase(Locale.ROOT).replace(" ",""), request.getPassword());
         authenticationManager.authenticate(authenticationToken);
         return new LoginResponse(user.getUserId());
     }
