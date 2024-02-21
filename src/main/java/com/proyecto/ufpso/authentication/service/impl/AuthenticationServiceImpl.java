@@ -202,7 +202,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SecureRandom random = new SecureRandom();
         int code = random.nextInt(999999);
         String codeVerification = String.format("%06d",code);
-//        emailSendService.emailCodeVerification(codeVerification);
+//        emailSendService.emailCodeVerification(codeVerification,user.getPerson().getEmail());
         return codeVerification;
     }
 }
