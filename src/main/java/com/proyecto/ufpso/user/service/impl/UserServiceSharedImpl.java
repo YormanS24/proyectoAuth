@@ -22,7 +22,7 @@ public class UserServiceSharedImpl implements UserServiceShared {
 
     @Override
     public User getUserByUserName(String userName) {
-        return userRepository.findByUserName(userName).orElseThrow(()-> new AuthenticationFailedException("credenciales incorrectas"));
+        return userRepository.findByUserNameIgnoreCase(userName).orElseThrow(()-> new AuthenticationFailedException("credenciales incorrectas"));
     }
 
     @Override
@@ -53,5 +53,12 @@ public class UserServiceSharedImpl implements UserServiceShared {
     @Override
     public User getUserOfResetPassword(UUID userId, String userName) {
         return userRepository.findByUserIdAndUserName(userId,userName).orElseThrow(()-> new AuthenticationFailedException("usuario no encontrado"));
+    }
+
+    @Override
+    public void validateExistsUserName(String userName) {
+        if (userRepository.existsByUserName(userName)){
+            throw new IllegalArgumentException("ya se encuentra registrado un usuario con el mismo nombre: "+userName);
+        }
     }
 }

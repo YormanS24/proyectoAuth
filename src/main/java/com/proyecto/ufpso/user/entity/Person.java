@@ -4,6 +4,7 @@ import com.proyecto.ufpso.common.util.AuditEntity;
 import com.proyecto.ufpso.documentType.entity.DocumentType;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Table(name = "person",schema = "main")
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class Person extends AuditEntity {
 
     @Id
@@ -51,27 +53,25 @@ public class Person extends AuditEntity {
     @Column(name = "birthdate", nullable = false)
     private LocalDate Birthdate;
 
-    public Person() {
-    }
-
-    public Person(String name, String lastname, String documentNumber, String phone, String email, String charge, LocalDate birthdate) {
+    public Person(String name, String lastname, String documentNumber, String phone, String email, String direction, LocalDate birthdate) {
         this.name = name;
         this.lastname = lastname;
         this.documentNumber = documentNumber;
         this.phone = phone;
         this.email = email;
-        this.charge = charge;
+        this.direction = direction;
         Birthdate = birthdate;
+        this.charge = "CUSTOMER";
     }
 
-    public static Person create(String name, String lastname, String documentNumber, String phone, String email, String charge, LocalDate birthdate) {
+    public static Person create(String name, String lastname, String documentNumber, String phone, String email, String direction, LocalDate birthdate){
         return new Person(
                 name,
                 lastname,
                 documentNumber,
                 phone,
                 email,
-                charge,
+                direction,
                 birthdate
         );
     }
