@@ -21,4 +21,6 @@ public interface UserServiceShared {
     User  getUserNameAndEmail(String userName,String email);
 
     User getUserOfResetPassword(UUID userId,String userName);
+
+    void validateExistsUserName(String userName);
 }

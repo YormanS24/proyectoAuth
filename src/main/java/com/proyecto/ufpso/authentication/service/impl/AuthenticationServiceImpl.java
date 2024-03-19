@@ -58,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public LoginResponse login(LoginRequest request) {
 
-        User user = userServiceShared.getUserByUserName(request.getUserName().toLowerCase(Locale.ROOT).replace(" ",""));
+        User user = userServiceShared.getUserByUserName(request.getUserName().replace(" ",""));
 
         if (user.isLocked()){
             throw new AuthenticationFailedException("el usuario se encuentra bloqueado");

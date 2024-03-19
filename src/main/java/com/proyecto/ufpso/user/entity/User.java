@@ -5,6 +5,7 @@ import com.proyecto.ufpso.refreshToken.entity.RefreshToken;
 import com.proyecto.ufpso.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Getter
 @Table(name = "user",schema = "main")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class User extends AuditEntity {
 
     @Id
@@ -101,5 +103,19 @@ public class User extends AuditEntity {
     public void addCodeVerification(String codeVerification){
         this.codeVerification = codeVerification;
         this.createCodeVerification = LocalDateTime.now();
+    }
+
+    public User(String userName, String password, String profileImage) {
+        this.userName = userName;
+        this.password = password;
+        this.profileImage = profileImage;
+    }
+
+    public static User create(String userName, String password, String profileImage){
+        return new User(
+                userName,
+                password,
+                profileImage
+        );
     }
 }

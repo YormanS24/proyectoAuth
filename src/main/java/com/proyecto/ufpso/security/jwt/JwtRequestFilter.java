@@ -29,7 +29,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         //1. sacamos el jwt de la petición
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 

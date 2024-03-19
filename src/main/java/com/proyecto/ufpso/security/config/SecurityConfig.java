@@ -52,6 +52,7 @@ public class SecurityConfig {
 
     private final String[] ROUTES_POST_ALLOWED_WITHOUT_AUTHENTICATION = {
             "/security/authentication/**",
+            "/security/user/"
     };
 
     @Bean

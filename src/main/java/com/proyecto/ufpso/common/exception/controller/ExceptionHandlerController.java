@@ -4,6 +4,7 @@ import com.proyecto.ufpso.common.exception.service.AuthenticationFailedException
 import com.proyecto.ufpso.common.exception.service.ResourceNotFoundException;
 import com.proyecto.ufpso.common.exception.service.ServerErrorException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -46,8 +48,8 @@ public class ExceptionHandlerController {
     public Map<String,String> methodException(MethodArgumentNotValidException ex){
         Map<String,String> map = new HashMap<>();
         map.put("error", "Bad Request");
-        map.put("message", ex.getMessage());
-        log.warn("MethodArgumentNotValidException [{}]",ex.getMessage());
+        map.put("message", ex.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        log.warn("MethodArgumentNotValidException [{}]", ex.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList()));
         return map;
     }
 
