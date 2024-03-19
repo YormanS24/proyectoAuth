@@ -32,7 +32,7 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         hbm2ddl:
           charset_name: UTF-8
           import_files: sql/documentType.sql,sql/user.sql,sql/role.sql,sql/module.sql,sql/permission.sql
